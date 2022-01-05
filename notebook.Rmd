@@ -1,0 +1,66 @@
+
+# Lecture 2
+
+## Bayesian Updating: Marble Example (Grid Approximation)
+
+### Computing the Posterior
+
+Example: Distribution of two marble colors in a bag. Infer p from the sampled marbles.
+
+Define the parameter space and assign prior probabilities:
+
+```{r}
+p_grid <- seq(0, 1, len=1000)
+prob_p <- rep(1, 1000) # uniform prior
+plot(prob_p)
+```
+
+Define the likelihood (data|p), i.e., how likely are the observations given a certain distribution of marble colours in the bag.
+The likelihood is given by a binomial distribution
+
+```{r}
+# Observation: 6 instances of x for n observations
+prob_data <- dbinom(6, 9, prob = p_grid)
+plot(prob_data)
+```
+
+We compute the (normalized) posterior distribution using Bayes rule, i.e., by multiplying likelihood and prior distribution.
+To obtain the relative plausibility, the posterior is normalized: 
+
+```{r}
+posterior <- prob_data * prob_p
+posterior <- posterior/sum(posterior)
+plot(posterior)
+```
+
+### Posterior predictive distribution 
+
+Computing the posterior predictive means to predict future observations on the basis of the whole posterior distribution (not a single point on the distribution, e.g., the mean). 
+Therefore, random samples of the posterior are taken.
+For each sampled value for p, we predict the number of marbles. 
+To obtain the posterior predictive distribution, we sum up the predictions/counts. 
+
+We start by sampling from the posterior distribution ... 
+
+```{r}
+samples <- sample( p_grid, prob = posterior, size = 1e4, replace = TRUE)
+plot(samples)
+plot(density(samples))
+```
+
+and generate the respective predictive distribution by computing the observation/desired quantity for each sample:
+
+```{r}
+w <- rbinom(1e4, size = 9, prob = samples)
+hist(w)
+```
+
+Note: The sampling approach may be replaced by integral calculus, however MCMC produces samples anyway. 
+
+
+
+
+
+
+
+
